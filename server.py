@@ -2,9 +2,13 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    with open('resources/swagger_example.json', 'r', encoding='utf-8') as f:
+        filetext = f.read()
+
+    return render_template('index.html', filetext=filetext)
 
 
 if __name__ == '__main__':
