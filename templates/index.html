@@ -24,12 +24,12 @@
     </div>
     <div class="row">
         <div class="col-8">
-                <div class="form-group">
-                    <label for="exampleFormControlTextarea1">Спецификация АПИ</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1"
-                              rows="20"> {{ filetext }} </textarea>
-                </div>
-                <button type="button" class="btn btn-primary btn-lg btn-block">Сгенерировать</button>
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Спецификация АПИ</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1"
+                          rows="20"> {{ filetext }} </textarea>
+            </div>
+            <button type="button" class="btn btn-primary btn-lg btn-block" id="sendSwaggerButton">Сгенерировать</button>
         </div>
         <div class="col">
             2 of 2
@@ -37,6 +37,21 @@
     </div>
     sdkjfnglksdjnfglkjn
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
+    const textAreaSwagger = document.querySelector('#exampleFormControlTextarea1');
+    const sendButton = document.querySelector('#sendSwaggerButton');
+
+    sendButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        axios.post('/swagger', textAreaSwagger.value)
+        .then(function (response) {
+            console.log(response);
+        });
+    });
+</script>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
