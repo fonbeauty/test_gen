@@ -1,0 +1,2 @@
+WEATHER_DEFAULT_CITY = "Moscow,Russia"
+WEATHER_API_KEY = "ВАШ_КЛЮЧ_API"
