@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request
+from datetime import datetime
+
+from webapp.model import db, Swagger
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
+    db.init_app(app)
 
     @app.route('/')
     def index():
@@ -16,7 +20,14 @@ def create_app():
     def receive_swagger():
         # todo добавить обработку исключений
         data = request.json
-        print("HELLO ", data)
+        print("HELLO \n", data)
+        save_swagger(data)
         return {}
 
     return app
+
+
+def save_swagger(swagger, title='stub', author='stub' ):
+    swagger = Swagger(swagger=swagger, title=title, author=author, edit_date=datetime.now(), create_date=datetime.now())
+    db.session.add(swagger)
+    db.session.commit()
