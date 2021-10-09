@@ -19,15 +19,17 @@ def create_app():
     @app.route('/swagger', methods=['POST'])
     def receive_swagger():
         # todo добавить обработку исключений
-        data = request.json
-        print("HELLO \n", data)
-        save_swagger(data)
+        try:
+            data = request.json
+            print("HELLO \n", data)
+            save_swagger(data)
+        except Exception:
+            print('ALARMA Received not valid data type')
         return {}
-
     return app
 
 
-def save_swagger(swagger, title='stub', author='stub' ):
+def save_swagger(swagger, title='stub', author='stub'):
     swagger = Swagger(swagger=swagger, title=title, author=author, edit_date=datetime.now(), create_date=datetime.now())
     db.session.add(swagger)
     db.session.commit()
