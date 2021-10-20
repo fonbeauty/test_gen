@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 from datetime import datetime
-import requests
+from webapp.tests import test_execute
+# import requests
+
 
 from webapp.model import db, Swagger
 
@@ -23,26 +25,23 @@ def create_app():
         try:
             data = request.json
             print('AAAAAAAAAAAAAA')
-            # print(data, '\n')
-            # print('OLOLO \n', type(data))
             print("HELLO \n", data, "\n TYPE ", type(data))
             print(len(data['paths']))
             print('BBBBBBBBBBBBBB')
             print(data['paths'])
             print('CCCCCCCCCCCCCC')
-            # print(data['paths']['/inventory'])
-            # print(len(data['paths']['/inventory']))
 
-            for endpoints in data['paths']:
-                print('Endpoint ', endpoints)
-                for method in data['paths'][endpoints]:
+            for endpoint in data['paths']:
+                print('Endpoint ', endpoint)
+                for method in data['paths'][endpoint]:
                     print('Method ', method)
-
+                    test_execute((app.config['BASE_URL'] + endpoint), method)
 
             save_swagger(data)
         except Exception:
             print('ALARMA Received not valid data type')
         return {}
+
     return app
 
 
