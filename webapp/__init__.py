@@ -31,15 +31,33 @@ def create_app():
             print(data['paths'])
             print('CCCCCCCCCCCCCC')
 
+            querys = []
+            headers =[]
             for endpoint in data['paths']:
                 print('Endpoint ', endpoint)
                 for method in data['paths'][endpoint]:
-                    print('Method ', method)
-                    test_execute((app.config['BASE_URL'] + endpoint), method)
+                    print(f'Метод {str(method).upper()} ------------------')
+                    # print('Method ', method)
+                    try:
+                        for parameter in data['paths'][endpoint][method]['parameters']:
+                            # print('Parameter ', parameter)
+                            requestElement = parameter['in']
+                            print(f'Элемент запроса {requestElement}')
+                            if requestElement == 'query':
+                                querys.append(requestElement)
+                            elif requestElement == 'header':
+                                headers.append(requestElement)
 
-            save_swagger(data)
+                    except(BaseException):
+                        print(f'Ошибка: у метода {str(method).upper()} нет parameters')
+                    test_execute((app.config['BASE_URL'] + endpoint), method, querys, headers)
+                    print(f'Querys {querys}')
+                    print(f'Headers {headers}')
+
+            # save_swagger(data)
         except Exception:
             print('ALARMA Received not valid data type')
+        print('END ------------------')
         return {}
 
     return app
