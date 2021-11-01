@@ -31,13 +31,13 @@ def create_app():
             print(data['paths'])
             print('CCCCCCCCCCCCCC')
 
-            querys = []
-            headers =[]
             for endpoint in data['paths']:
                 print('Endpoint ', endpoint)
                 for method in data['paths'][endpoint]:
                     print(f'Метод {str(method).upper()} ------------------')
                     # print('Method ', method)
+                    querys = []
+                    headers = []
                     try:
                         for parameter in data['paths'][endpoint][method]['parameters']:
                             # print('Parameter ', parameter)
