@@ -37,9 +37,11 @@ def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
 
 def print_request(result):
     time = datetime.datetime.now().time()
-    print(f'{time} {result.request.method} {result.request.url}')
-    print(f'Headers {result.request.headers}')
-
+    print('---Request---')
+    print(f'{time}: {result.request.method} {result.request.url}')
+    print(f'Headers: {result.request.headers}')
+    print(f'Payload: {result.request.body}')
+    print('---END---')
 
 
 def get_uid(type):
