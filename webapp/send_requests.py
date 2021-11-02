@@ -1,6 +1,6 @@
 import requests
 import uuid
-
+import datetime
 
 def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
     for endpoint in endpoints:
@@ -36,8 +36,10 @@ def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
 
 
 def print_request(result):
-    print(f'{time} \nRequest {result.request.method} {result.request.url}')
+    time = datetime.datetime.now().time()
+    print(f'{time} {result.request.method} {result.request.url}')
     print(f'Headers {result.request.headers}')
+
 
 
 def get_uid(type):
