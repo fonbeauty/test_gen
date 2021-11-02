@@ -8,3 +8,8 @@
 ```
 git clone https://github.com/fonbeauty/test_gen.git
 ```
+
+## Запуск приложения
+```
+export FLASK_APP=webapp && export FLASK_ENV=development && flask run
+```
