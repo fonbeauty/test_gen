@@ -1,4 +1,5 @@
 import requests
+import uuid
 
 
 def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
@@ -7,27 +8,41 @@ def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
         method405list = list(set(methods_list) ^ set(endpoints[endpoint]))
         # method405list.reverse()
         method405 = method405list[0]
-        url = request_url + endpoint
         print(f'XOR LISTS {method405}')
+        url = request_url + endpoint
+
+        headers = {'Authorization': 'Bearer ' + get_uid('jti'), 'RqUID': get_uid('rquid')}
+
         try:
             if method405 == 'GET':
-                result = requests.get(url)
+                result = requests.get(url, headers=headers)
             elif method405 == 'POST':
-                result = requests.post(url, body)
-                print(result)
+                result = requests.post(url, headers=headers, data=body)
             elif method405 == 'PUT':
-                result = requests.put(url, body)
+                result = requests.put(url, headers=headers, data=body)
             elif method405 == 'DELETE':
-                result = requests.delete(url)
+                result = requests.delete(url, headers=headers)
             elif method405 == 'PATCH':
-                result = requests.patch(url, body)
+                result = requests.patch(url, headers=headers, data=body)
             else:
                 print('Запрос с методом ', method405, ' не реализован')
                 return False
             # result.raise_for_status()
+            print_request(result)
             return result
         except(requests.RequestException, ValueError) as e:
             print(f'Получена ошибка {e} статус код {result.status_code}')
             return False
 
-    pass
+
+def print_request(result):
+    print(f'{time} \nRequest {result.request.method} {result.request.url}')
+    print(f'Headers {result.request.headers}')
+
+
+def get_uid(type):
+    uid = str(uuid.uuid4())
+    if type == 'rquid':
+        return uid.replace('-', '')
+    else:
+        return uid
