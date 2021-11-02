@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request
 from datetime import datetime
 from webapp.tests import test_execute
-# import requests
+from webapp.send_requests import standart_tests
+
 
 
 from webapp.model import db, Swagger
@@ -22,6 +23,7 @@ def create_app():
     @app.route('/swagger', methods=['POST'])
     def receive_swagger():
         # todo добавить обработку исключений
+        endpoints = {}
         try:
             data = request.json
             print('AAAAAAAAAAAAAA')
@@ -33,26 +35,31 @@ def create_app():
 
             for endpoint in data['paths']:
                 print('Endpoint ', endpoint)
+                pathMethod = []
                 for method in data['paths'][endpoint]:
-                    print(f'Метод {str(method).upper()} ------------------')
-                    # print('Method ', method)
-                    querys = []
-                    headers = []
-                    try:
-                        for parameter in data['paths'][endpoint][method]['parameters']:
-                            # print('Parameter ', parameter)
-                            requestElement = parameter['in']
-                            print(f'Элемент запроса {requestElement}')
-                            if requestElement == 'query':
-                                querys.append(requestElement)
-                            elif requestElement == 'header':
-                                headers.append(requestElement)
+                    pathMethod.append(str(method).upper())
+                    print('Methods ', pathMethod)
 
-                    except(BaseException):
-                        print(f'Ошибка: у метода {str(method).upper()} нет parameters')
-                    test_execute((app.config['BASE_URL'] + endpoint), method, querys, headers)
-                    print(f'Querys {querys}')
-                    print(f'Headers {headers}')
+                    # querys = [] здесь идет перебор по параметрам эндпоинта, пока не реализовно
+                    # headers = []
+                    # try:
+                    #     for parameter in data['paths'][endpoint][method]['parameters']:
+                    #         # print('Parameter ', parameter)
+                    #         requestElement = parameter['in']
+                    #         print(f'Элемент запроса {requestElement}')
+                    #         if requestElement == 'query':
+                    #             querys.append(requestElement)
+                    #         elif requestElement == 'header':
+                    #             headers.append(requestElement)
+                    #
+                    # except(BaseException):
+                    #     print(f'Ошибка: у метода {str(method).upper()} нет parameters')
+                    # test_execute((app.config['BASE_URL'] + endpoint), method, querys, headers)
+                    # print(f'Querys {querys}')
+                    # print(f'Headers {headers}')
+            endpoints[endpoint] = pathMethod
+            print(f'Endpoints with methods {endpoints}')
+            standart_tests(endpoints, app.config['METHOD_LIST'], app.config['BASE_URL'])
 
             # save_swagger(data)
         except Exception:
