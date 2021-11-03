@@ -26,7 +26,12 @@ def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
         headers = {'Authorization': 'Bearer ' + jti, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6cz'}
         tests_execute(url, method, headers, body)
 
-
+        headers = {'RqUID': get_uid('rquid')}
+        tests_execute(url, method, headers, body)
+        headers = {'Authorization': '', 'RqUID': get_uid('rquid')}
+        tests_execute(url, method, headers, body)
+        headers = {'Authorization': 'Bearer 77d3073c-5987-4dd0-83f3-e21c0771c029', 'RqUID': get_uid('rquid')}
+        tests_execute(url, method, headers, body)
 
 
 def tests_execute(url, method, headers, body):
