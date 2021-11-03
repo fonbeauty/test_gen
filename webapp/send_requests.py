@@ -2,37 +2,54 @@ import requests
 import uuid
 import datetime
 
+
 def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
     for endpoint in endpoints:
         print(f'Endpoints {endpoints[endpoint]} Methods_list {methods_list}')
         method405list = list(set(methods_list) ^ set(endpoints[endpoint]))
-        # method405list.reverse()
-        method405 = method405list[0]
-        print(f'XOR LISTS {method405}')
+        method = method405list[0]
+        print(f'XOR LISTS {method}')
         url = request_url + endpoint
+        jti = get_uid('jti')
+        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': get_uid('rquid')}
+        tests_execute(url, method, headers, body)
 
-        headers = {'Authorization': 'Bearer ' + get_uid('jti'), 'RqUID': get_uid('rquid')}
+        method = methods_list[0]
+        headers = {'Authorization': 'Bearer ' + jti}
+        tests_execute(url, method, headers, body)
+        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': ''}
+        tests_execute(url, method, headers, body)
+        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e31'}
+        tests_execute(url, method, headers, body)
+        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6c33'}
+        tests_execute(url, method, headers, body)
+        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6cz'}
+        tests_execute(url, method, headers, body)
 
-        try:
-            if method405 == 'GET':
-                result = requests.get(url, headers=headers)
-            elif method405 == 'POST':
-                result = requests.post(url, headers=headers, data=body)
-            elif method405 == 'PUT':
-                result = requests.put(url, headers=headers, data=body)
-            elif method405 == 'DELETE':
-                result = requests.delete(url, headers=headers)
-            elif method405 == 'PATCH':
-                result = requests.patch(url, headers=headers, data=body)
-            else:
-                print('Запрос с методом ', method405, ' не реализован')
-                return False
-            # result.raise_for_status()
-            print_request(result)
-            return result
-        except(requests.RequestException, ValueError) as e:
-            print(f'Получена ошибка {e} статус код {result.status_code}')
+
+
+
+def tests_execute(url, method, headers, body):
+    try:
+        if method == 'GET':
+            result = requests.get(url, headers=headers)
+        elif method == 'POST':
+            result = requests.post(url, headers=headers, data=body)
+        elif method == 'PUT':
+            result = requests.put(url, headers=headers, data=body)
+        elif method == 'DELETE':
+            result = requests.delete(url, headers=headers)
+        elif method == 'PATCH':
+            result = requests.patch(url, headers=headers, data=body)
+        else:
+            print('Запрос с методом ', method, ' не реализован')
             return False
+        # result.raise_for_status()
+        print_request(result)
+        return result
+    except(requests.RequestException, ValueError) as e:
+        print(f'Получена ошибка {e} статус код {result.status_code}')
+        return False
 
 
 def print_request(result):
