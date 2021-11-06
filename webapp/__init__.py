@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from datetime import datetime
 from webapp.tests import test_execute
 from webapp.send_requests import standart_tests
-
+from webapp.forms import LoginForm
 
 
 from webapp.model import db, Swagger
@@ -12,6 +12,13 @@ def create_app():
     app = Flask(__name__)
     app.config.from_pyfile('config.py')
     db.init_app(app)
+
+    @app.route('/login')
+    def login():
+        title = 'Авторизация'
+        login_form = LoginForm()
+        return render_template('login.html', page_title=title, form=login_form)
+
 
     @app.route('/')
     def index():
