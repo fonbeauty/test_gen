@@ -15,26 +15,40 @@
 <h1>Tests generator</h1>
 <div class="container">
     <div class="row">
-        <div class="col-8">
-            <label>Swagger</label>
+        <div class="col-2">
+            <label for="formatSelect">Format</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons" id="formatSelect">
+                <label class="btn btn-primary active">
+                    <input type="radio" name="format" id="jsonRadio" autocomplete="off" checked> JSON
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" name="format" id="yamlRadio" autocomplete="off"> YAML
+                </label>
+            </div>
+
+        </div>
+        <div class="col-6">
+            <label for="adressInput">Target host</label>
+            <input type="text" class="form-control" placeholder="http://127.0.0.1:5000/" value="http://127.0.0.1:5000"
+                   id="adressInput">
         </div>
         <div class="col">
-            2 of 2
+            2 2
         </div>
     </div>
     <div class="row">
         <div class="col-8">
             {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <div class="alert alert-warning" role="alert">
-                    {% for message in messages %}
-                    {{ message }}<br>
-                    {% endfor %}
-                </div>
-                {% endif %}
+            {% if messages %}
+            <div class="alert alert-warning" role="alert">
+                {% for message in messages %}
+                {{ message }}<br>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% endwith %}
             <div class="form-group">
-                <label for="exampleFormControlTextarea1">Спецификация АПИ</label>
+                <label for="exampleFormControlTextarea1" class="pt-3">Спецификация АПИ</label>
                 <textarea class="form-control" id="exampleFormControlTextarea1"
                           rows="20"> {{ filetext }} </textarea>
             </div>
@@ -44,22 +58,41 @@
             2 of 2
         </div>
     </div>
-    sdkjfnglksdjnfglkjn
+    Просто поле
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
-    axios.defaults.headers.post['Content-Type'] = 'application/json';
+    const jsonRadio = document.querySelector('#jsonRadio')
+    const yamlRadio = document.querySelector('#yamlRadio')
+    const adressInput = document.querySelector('#adressInput')
     const textAreaSwagger = document.querySelector('#exampleFormControlTextarea1');
     const sendButton = document.querySelector('#sendSwaggerButton');
 
     sendButton.addEventListener('click', function (e) {
         e.preventDefault();
-        axios.post('/swagger', textAreaSwagger.value)
+        if (jsonRadio.checked) {
+            console.log('application/json')
+            axios.defaults.headers.post['Content-Type'] = 'application/json';
+        } else {
+            console.log('text/plain')
+            axios.defaults.headers.post['Content-Type'] = 'text/plain';
+        }    
+        axios.post('/swagger', textAreaSwagger.value, 
+            {params: {
+                adress: adressInput.value
+            } })
         .then(function (response) {
             console.log(response);
         });
     });
+
+
+
+
+
+
+
 </script>
 
 <!-- Optional JavaScript -->

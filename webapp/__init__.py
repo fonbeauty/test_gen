@@ -76,24 +76,25 @@ def create_app():
         endpoints = {}
         try:
             data = request.json
+            base_url = request.args.get('adress', '')
+            print(f"Адрес для запроса {base_url}")
             print('AAAAAAAAAAAAAA')
-            print("HELLO \n", data, "\n TYPE ", type(data))
-            print(len(data['paths']))
+            print(len(data.get('paths')))
             print('BBBBBBBBBBBBBB')
-            print(data['paths'])
+            print(data.get('paths'))
             print('CCCCCCCCCCCCCC')
 
-            for endpoint in data['paths']:
+            for endpoint in data.get('paths'):
                 print('Endpoint ', endpoint)
                 pathMethod = []
-                for method in data['paths'][endpoint]:
+                for method in data.get('paths')[endpoint]:
                     pathMethod.append(str(method).upper())
                     print('Methods ', pathMethod)
 
                     # querys = [] здесь идет перебор по параметрам эндпоинта, пока не реализовно
                     # headers = []
                     # try:
-                    #     for parameter in data['paths'][endpoint][method]['parameters']:
+                    #     for parameter in data.get('paths')[endpoint][method]['parameters']:
                     #         # print('Parameter ', parameter)
                     #         requestElement = parameter['in']
                     #         print(f'Элемент запроса {requestElement}')
@@ -109,11 +110,11 @@ def create_app():
                     # print(f'Headers {headers}')
             endpoints[endpoint] = pathMethod
             print(f'Endpoints with methods {endpoints}')
-            standart_tests(endpoints, app.config['METHOD_LIST'], app.config['BASE_URL'])
+            standart_tests(endpoints, app.config['METHOD_LIST'], base_url)
 
             # save_swagger(data)
-        except Exception:
-            print('ALARMA Received not valid data type')
+        except Exception as e:
+            print(f'ALARMA Received not valid data type. Exception {e}')
         print('END ------------------')
         return {}
 
