@@ -18,11 +18,11 @@
         <div class="col-2">
             <label for="formatSelect">Format</label>
             <div class="btn-group btn-group-toggle" data-toggle="buttons" id="formatSelect">
-                <label class="btn btn-primary active">
-                    <input type="radio" name="format" id="jsonRadio" autocomplete="off" checked> JSON
-                </label>
                 <label class="btn btn-primary">
-                    <input type="radio" name="format" id="yamlRadio" autocomplete="off"> YAML
+                    <input type="radio" name="format" id="jsonRadio" autocomplete="off"> JSON
+                </label>
+                <label class="btn btn-primary active">
+                    <input type="radio" name="format" id="yamlRadio" autocomplete="off" checked> YAML
                 </label>
             </div>
 
@@ -50,7 +50,7 @@
             <div class="form-group">
                 <label for="exampleFormControlTextarea1" class="pt-3">Спецификация АПИ</label>
                 <textarea class="form-control" id="exampleFormControlTextarea1"
-                          rows="20"> {{ filetext }} </textarea>
+                          rows="20">{{ filetext }}</textarea>
             </div>
             <button type="button" class="btn btn-primary btn-lg btn-block" id="sendSwaggerButton">Сгенерировать</button>
         </div>

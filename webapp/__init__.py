@@ -31,13 +31,11 @@ def create_app():
         login_form = LoginForm()
         return render_template('login.html', page_title=title, form=login_form)
 
-
     @app.route('/logout')
     def logout():
         logout_user()
         flash('Вы успешно разлогинились')
         return redirect(url_for('index'))
-
 
     @app.route('/process-login', methods=['POST'])
     def process_login():
@@ -53,7 +51,6 @@ def create_app():
         flash('Неправильные имя или пароль пользователя')
         return redirect(url_for('login'))
 
-
     @app.route('/admin')
     @login_required
     def admin_index():
@@ -61,8 +58,6 @@ def create_app():
             return 'Привет админ'
         else:
             return 'Ты не админ'
-
-
 
     @app.route('/')
     def index():
@@ -78,73 +73,45 @@ def create_app():
         base_url = request.args.get('adress', 'http://127.0.0.1:5000')
         print(f"Адрес для запроса {base_url}")
         paths = get_paths(request)
-        if request.headers['Content-Type'] =='application/json':
+        if paths:
             try:
-                data = request.json
-                print('AAAAAAAAAAAAAA')
-                print(len(data.get('paths')))
-                print('BBBBBBBBBBBBBB')
-                print(data.get('paths'))
-                print('CCCCCCCCCCCCCC')
-
-                for endpoint in data.get('paths'):
+                for endpoint in paths:
                     print('Endpoint ', endpoint)
-                    pathMethod = []
-                    for method in data.get('paths')[endpoint]:
-                        pathMethod.append(str(method).upper())
-                        print('Methods ', pathMethod)
-                        # querys = [] здесь идет перебор по параметрам эндпоинта, пока не реализовно
-                        # headers = []
-                        # try:
-                        #     for parameter in data.get('paths')[endpoint][method]['parameters']:
-                        #         # print('Parameter ', parameter)
-                        #         requestElement = parameter['in']
-                        #         print(f'Элемент запроса {requestElement}')
-                        #         if requestElement == 'query':
-                        #             querys.append(requestElement)
-                        #         elif requestElement == 'header':
-                        #             headers.append(requestElement)
-                        #
-                        # except(BaseException):
-                        #     print(f'Ошибка: у метода {str(method).upper()} нет parameters')
-                        # test_execute((app.config['BASE_URL'] + endpoint), method, querys, headers)
-                        # print(f'Querys {querys}')
-                        # print(f'Headers {headers}')
-                endpoints[endpoint] = pathMethod
+                    path_method = []
+                    for method in paths[endpoint]:
+                        path_method.append(str(method).upper())
+                print('Methods ', path_method)
+                endpoints[endpoint] = path_method
                 print(f'Endpoints with methods {endpoints}')
                 # standart_tests(endpoints, app.config['METHOD_LIST'], base_url)
-
                 # save_swagger(data)
+                return {}
             except Exception as e:
-                print(f'ALARMA Received not valid data type. Exception {e}')
+                print(f'Exception \n {e}')
+                return {}
             print('END ------------------')
-            return {}
-        elif request.headers['Content-Type'] =='text/plain':
-            print(request.headers['Content-Type'])
-            try:
-                data_yaml = yaml.load(request.data, Loader=yaml.SafeLoader)
-                print(f'Paths: {data_yaml.get("paths")}')
-            except Exception as e:
-                print(f'ALARMA Received not valid data type. Exception {e}')
-            return {}
-        print('Получен не обрабатывемый Content-Type')
+        else:
+            print('Ошибка при обработке запроса')
     return app
 
 
 def get_paths(request):
     try:
         if request.headers['Content-Type'] == 'application/json':
-            data = request.json
-            return data.get('paths')
+            data_json = request.json
+            print('application/json ', data_json)
+            return data_json.get('paths')
         elif request.headers['Content-Type'] == 'text/plain':
             data_yaml = yaml.load(request.data, Loader=yaml.SafeLoader)
-            print(f'Paths: {data_yaml.get("paths")}')
+            print('text/plain', data_yaml)
             return data_yaml.get("paths")
         else:
+            print('Получен не обрабатывемый Content-Type')
             return False
     except Exception as e:
-        print(f'ALARMA Received not valid data type. \n Exception {e}')
+        print(f'Received not valid data type. \n Exception {e}')
         return False
+
 
 def save_swagger(swagger, title='stub', author='stub'):
     swagger = Swagger(swagger=swagger, title=title, author=author, edit_date=datetime.now(), create_date=datetime.now())
