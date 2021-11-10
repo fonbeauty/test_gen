@@ -33,11 +33,10 @@
                    id="adressInput">
         </div>
         <div class="col">
-            2 2
         </div>
     </div>
     <div class="row">
-        <div class="col-8">
+        <div class="col-7">
             {% with messages = get_flashed_messages() %}
             {% if messages %}
             <div class="alert alert-warning" role="alert">
@@ -48,17 +47,72 @@
             {% endif %}
             {% endwith %}
             <div class="form-group">
-                <label for="exampleFormControlTextarea1" class="pt-3">Спецификация АПИ</label>
+                <label for="exampleFormControlTextarea1" class="pt-3">API specification</label>
                 <textarea class="form-control" id="exampleFormControlTextarea1"
                           rows="20">{{ filetext }}</textarea>
             </div>
-            <button type="button" class="btn btn-primary btn-lg btn-block" id="sendSwaggerButton">Сгенерировать</button>
+            <button type="button" class="btn btn-primary btn-lg btn-block" id="sendSwaggerButton">Generate</button>
         </div>
         <div class="col">
-            2 of 2
+            <label for="resultTable" class="pt-3">Results (Stub)</label>
+            <table class="table table-striped" id="resultTable">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Test</th>
+                    <th scope="col">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">2</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">3</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">4</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">5</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">6</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">7</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">8</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">9</th>
+                    <td>Some test</td>
+                    <td>Success</td>
+                  </tr>
+                </tbody>
+              </table>
         </div>
     </div>
-    Просто поле
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
