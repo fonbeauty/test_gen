@@ -75,6 +75,7 @@ def create_app():
         paths = get_paths(request)
         if paths:
             try:
+                print('--- START ---')
                 for endpoint in paths:
                     print('Endpoint ', endpoint)
                     path_method = []
@@ -83,13 +84,14 @@ def create_app():
                 print('Methods ', path_method)
                 endpoints[endpoint] = path_method
                 print(f'Endpoints with methods {endpoints}')
-                # standart_tests(endpoints, app.config['METHOD_LIST'], base_url)
+                standart_tests(endpoints, app.config['METHOD_LIST'], base_url)
                 # save_swagger(data)
+                print('--- END ---')
                 return {}
             except Exception as e:
                 print(f'Exception \n {e}')
+                print('--- END ---')
                 return {}
-            print('END ------------------')
         else:
             print('Ошибка при обработке запроса')
     return app

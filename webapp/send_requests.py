@@ -3,38 +3,59 @@ import uuid
 import datetime
 
 
-def standart_tests(endpoints, methods_list, request_url, body={'key': 'value'}):
+def standart_tests(endpoints, methods_list, request_url, body=None):
+    if body is None:
+        body = {'key': 'value'}
     for endpoint in endpoints:
-        print(f'Endpoints {endpoints[endpoint]} Methods_list {methods_list}')
+        print(f'Endpoints {endpoints[endpoint]} Methods list {methods_list}')
         method405list = list(set(methods_list) ^ set(endpoints[endpoint]))
-        method = method405list[0]
-        print(f'XOR LISTS {method}')
         url = request_url + endpoint
-        jti = get_uid('jti')
-        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': get_uid('rquid')}
-        tests_execute(url, method, headers, body)
+        token = get_uid('jti')
 
-        method = methods_list[0]
-        headers = {'Authorization': 'Bearer ' + jti}
-        tests_execute(url, method, headers, body)
-        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': ''}
-        tests_execute(url, method, headers, body)
-        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e31'}
-        tests_execute(url, method, headers, body)
-        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6c33'}
-        tests_execute(url, method, headers, body)
-        headers = {'Authorization': 'Bearer ' + jti, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6cz'}
-        tests_execute(url, method, headers, body)
+        send_test_request('Method not allowed', url, method405list[0], token, body)
 
+        send_test_request('Not found', url, methods_list[0], token, body)
+
+        send_test_request('RqUID header is absent', url, methods_list[0], token, body)
+        send_test_request('Empty RqUID header', url, methods_list[0], token, body)
+        send_test_request('RqUID header less 32 symbols', url, methods_list[0], token, body)
+        send_test_request('RqUID header more 32 symbols', url, methods_list[0], token, body)
+        send_test_request('RqUID header consist invalid symbol', url, methods_list[0], token, body)
+
+        send_test_request('Authorization header is absent', url, methods_list[0], token, body)
+        send_test_request('Empty Authorization header', url, methods_list[0], token, body)
+        send_test_request('In Authorization header other token', url, methods_list[0], token, body)
+
+
+def send_test_request(name, url, method, token, body):
+    headers = {'Authorization': 'Bearer ' + token, 'RqUID': get_uid('rquid')}
+    if name == 'Method not allowed':
+        headers = {'Authorization': 'Bearer ' + token, 'RqUID': get_uid('rquid')}
+    elif name == 'Not found':
+        result = tests_execute(name, url + 'wrongpath', method, headers, body)
+        return result
+    elif name == 'RqUID header is absent':
+        headers = {'Authorization': 'Bearer ' + token}
+    elif name == 'Empty RqUID header':
+        headers = {'Authorization': 'Bearer ' + token, 'RqUID': ''}
+    elif name == 'RqUID header less 32 symbols':
+        headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e31'}
+    elif name == 'RqUID header more 32 symbols':
+        headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6c33'}
+    elif name == 'RqUID header consist invalid symbol':
+        headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6cz'}
+    elif name == 'Authorization header is absent':
         headers = {'RqUID': get_uid('rquid')}
-        tests_execute(url, method, headers, body)
+    elif name == 'Empty Authorization header':
         headers = {'Authorization': '', 'RqUID': get_uid('rquid')}
-        tests_execute(url, method, headers, body)
+    elif name == 'In Authorization header other token':
         headers = {'Authorization': 'Bearer 77d3073c-5987-4dd0-83f3-e21c0771c029', 'RqUID': get_uid('rquid')}
-        tests_execute(url, method, headers, body)
+
+    result = tests_execute(name, url, method, headers, body)
+    return result
 
 
-def tests_execute(url, method, headers, body):
+def tests_execute(name, url, method, headers, body):
     try:
         if method == 'GET':
             result = requests.get(url, headers=headers)
@@ -50,20 +71,20 @@ def tests_execute(url, method, headers, body):
             print('Запрос с методом ', method, ' не реализован')
             return False
         # result.raise_for_status()
-        print_request(result)
+        print_request(name, result)
         return result
     except(requests.RequestException, ValueError) as e:
         print(f'Получена ошибка {e} статус код {result.status_code}')
         return False
 
 
-def print_request(result):
+def print_request(name, result):
     time = datetime.datetime.now().time()
-    print('---Request---')
+    print(f'---Test {name} ---')
     print(f'{time}: {result.request.method} {result.request.url}')
     print(f'Headers: {result.request.headers}')
     print(f'Payload: {result.request.body}')
-    print('---END---')
+    print(f'---End test {name} ---')
 
 
 def get_uid(type):
