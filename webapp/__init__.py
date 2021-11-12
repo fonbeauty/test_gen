@@ -4,7 +4,7 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from datetime import datetime
 
 from webapp.tests import test_execute
-from webapp.send_requests import standart_tests
+from webapp.send_requests import execute_standart_tests
 from webapp.forms import LoginForm
 from webapp.model import db, Swagger, User
 import yaml
@@ -72,47 +72,58 @@ def create_app():
         endpoints = {}
         base_url = request.args.get('adress', 'http://127.0.0.1:5000')
         print(f"Адрес для запроса {base_url}")
-        paths = get_paths(request)
-        if paths:
-            try:
-                print('--- START ---')
-                for endpoint in paths:
-                    print('Endpoint ', endpoint)
-                    path_method = []
-                    for method in paths[endpoint]:
-                        path_method.append(str(method).upper())
-                print('Methods ', path_method)
-                endpoints[endpoint] = path_method
-                print(f'Endpoints with methods {endpoints}')
-                standart_tests(endpoints, app.config['METHOD_LIST'], base_url)
-                # save_swagger(data)
-                print('--- END ---')
-                return {}
-            except Exception as e:
-                print(f'Exception \n {e}')
-                print('--- END ---')
-                return {}
+        swagger_dict = get_swagger_dict(request)
+        security_dict = get_security(swagger_dict)
+        print(f'Значение секции security_schemes  {security_dict}')
+        if swagger_dict:
+            paths_dict = swagger_dict.get('paths', False)
+            if paths_dict:
+                try:
+                    print('--- START ---')
+                    for endpoint in paths_dict:
+                        print('Endpoint ', endpoint)
+                        path_method = []
+                        for method in paths_dict[endpoint]:
+                            path_method.append(str(method).upper())
+                    # print('Methods ', path_method)
+                    endpoints[endpoint] = path_method
+                    print(f'Endpoints with methods {endpoints}')
+                    execute_standart_tests(endpoints, app.config['METHOD_LIST'], base_url, security_dict)
+                    print('--- END ---')
+                    return {}
+                except Exception as e:
+                    print(f'Exception \n {e}')
+                    print('--- END ---')
+                    return {}
+            else:
+                print('Ошибка - не найдена секция paths в спецификации')
         else:
-            print('Ошибка при обработке запроса')
+            print('Ошибка при обработке спецификации')
+
     return app
 
 
-def get_paths(request):
+def get_swagger_dict(request):
     try:
         if request.headers['Content-Type'] == 'application/json':
             data_json = request.json
-            print('application/json ', data_json)
-            return data_json.get('paths')
+            print('application/json', data_json)
+            return data_json
         elif request.headers['Content-Type'] == 'text/plain':
             data_yaml = yaml.load(request.data, Loader=yaml.SafeLoader)
             print('text/plain', data_yaml)
-            return data_yaml.get("paths")
+            return data_yaml
         else:
             print('Получен не обрабатывемый Content-Type')
             return False
     except Exception as e:
         print(f'Received not valid data type. \n Exception {e}')
         return False
+
+
+def get_security(swagger):
+    security = swagger.get('components', False).get('securitySchemes', False)
+    return security
 
 
 def save_swagger(swagger, title='stub', author='stub'):

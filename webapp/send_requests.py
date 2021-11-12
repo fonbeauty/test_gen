@@ -3,9 +3,34 @@ import uuid
 import datetime
 
 
-def standart_tests(endpoints, methods_list, request_url, body=None):
+def execute_standart_tests(endpoints, methods_list, request_url, security_schemes, body=None):
     if body is None:
         body = {'key': 'value'}
+
+    type_auth = next(iter(security_schemes))
+    url = request_url + next(iter(endpoints))
+    print(f'Секурити секция {type_auth}')
+    auth_type = security_schemes[type_auth].get('type')
+    if auth_type == 'oauth2':
+        scope = security_schemes.get('oauth')
+        print(f'Скоуп {scope}')
+        client_id = '3dbb0219-2962-4270-bc4f-33b195eae308'
+        client_secret = 'b9fbc8af-875d-43a8-9a1d-f31101a6f62f'
+        auth_url = 'https//some_site/oauth'
+        # print(f'URL для authorization {url}')
+        token = get_token(auth_type, client_id, client_secret, scope, auth_url)
+        execute_authorization_tests(url, methods_list[0], token, body)
+
+    elif security_schemes[type_auth].get('type') == 'basic':
+        token = '00000000-0000-0000-0000-000000000001'
+        print('Тип аутентификации basic')
+    elif security_schemes[type_auth].get('type') == 'apiKey':
+        token = '00000000-0000-0000-0000-000000000002'
+        print('Тип аутентификации apiKey')
+    else:
+        token = '00000000-0000-0000-0000-000000000003'
+        print('Не предусмотренный тип аутентификации')
+
     for endpoint in endpoints:
         print(f'Endpoints {endpoints[endpoint]} Methods list {methods_list}')
         method405list = list(set(methods_list) ^ set(endpoints[endpoint]))
@@ -22,9 +47,20 @@ def standart_tests(endpoints, methods_list, request_url, body=None):
         send_test_request('RqUID header more 32 symbols', url, methods_list[0], token, body)
         send_test_request('RqUID header consist invalid symbol', url, methods_list[0], token, body)
 
-        send_test_request('Authorization header is absent', url, methods_list[0], token, body)
-        send_test_request('Empty Authorization header', url, methods_list[0], token, body)
-        send_test_request('In Authorization header other token', url, methods_list[0], token, body)
+
+def execute_authorization_tests(url, method, token, body):
+    headers = {'RqUID': get_uid('rquid')}
+    tests_execute('Authorization header is absent', url, method, headers, body)
+
+    headers = {'Authorization': '', 'RqUID': get_uid('rquid')}
+    tests_execute('Empty Authorization header', url, method, headers, body)
+
+    headers = {'Authorization': 'Bearer 77d3073c-5987-4dd0-83f3-e21c0771c029', 'RqUID': get_uid('rquid')}
+    tests_execute('In Authorization header other token', url, method, headers, body)
+
+    # send_test_request('Authorization header is absent', url, method, token, body)
+    # send_test_request('Empty Authorization header', url, method, token, body)
+    # send_test_request('In Authorization header other token', url, method, token, body)
 
 
 def send_test_request(name, url, method, token, body):
@@ -44,12 +80,12 @@ def send_test_request(name, url, method, token, body):
         headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6c33'}
     elif name == 'RqUID header consist invalid symbol':
         headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6cz'}
-    elif name == 'Authorization header is absent':
-        headers = {'RqUID': get_uid('rquid')}
-    elif name == 'Empty Authorization header':
-        headers = {'Authorization': '', 'RqUID': get_uid('rquid')}
-    elif name == 'In Authorization header other token':
-        headers = {'Authorization': 'Bearer 77d3073c-5987-4dd0-83f3-e21c0771c029', 'RqUID': get_uid('rquid')}
+    # elif name == 'Authorization header is absent':
+    #     headers = {'RqUID': get_uid('rquid')}
+    # elif name == 'Empty Authorization header':
+    #     headers = {'Authorization': '', 'RqUID': get_uid('rquid')}
+    # elif name == 'In Authorization header other token':
+    #     headers = {'Authorization': 'Bearer 77d3073c-5987-4dd0-83f3-e21c0771c029', 'RqUID': get_uid('rquid')}
 
     result = tests_execute(name, url, method, headers, body)
     return result
@@ -85,6 +121,11 @@ def print_request(name, result):
     print(f'Headers: {result.request.headers}')
     print(f'Payload: {result.request.body}')
     print(f'---End test {name} ---')
+
+
+def get_token(auth_type, client_id, client_secret, scope, auth_url):
+    print(f'Запрос токена')
+    return get_uid('token')
 
 
 def get_uid(type):
