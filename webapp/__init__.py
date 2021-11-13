@@ -80,15 +80,7 @@ def create_app():
             if paths_dict:
                 try:
                     print('--- START ---')
-                    for endpoint in paths_dict:
-                        print('Endpoint ', endpoint)
-                        path_method = []
-                        for method in paths_dict[endpoint]:
-                            path_method.append(str(method).upper())
-                    # print('Methods ', path_method)
-                    endpoints[endpoint] = path_method
-                    print(f'Endpoints with methods {endpoints}')
-                    execute_standart_tests(endpoints, app.config['METHOD_LIST'], base_url, security_dict)
+                    execute_standart_tests(paths_dict, app.config['METHOD_LIST'], base_url, security_dict)
                     print('--- END ---')
                     return {}
                 except Exception as e:
