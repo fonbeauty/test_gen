@@ -66,13 +66,13 @@
           },
           {
             "in": "header",
-            "name": "RqUID",
+            "name": "UID",
             "description": "Уникальный идентификатор запроса",
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^(([0-9]|[a-f]|[A-F]){32})$",
-              "example": "12345678901234567890123456789012"
+              "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}",
+              "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
             }
           }
         ],
@@ -105,13 +105,13 @@
         "parameters": [
           {
             "in": "header",
-            "name": "RqUID",
+            "name": "UID",
             "description": "Уникальный идентификатор запроса",
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^(([0-9]|[a-f]|[A-F]){32})$",
-              "example": "12345678901234567890123456789012"
+              "pattern": "[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}",
+              "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
             }
           }
         ],

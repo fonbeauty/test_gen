@@ -68,13 +68,9 @@ def create_app():
 
     @app.route('/swagger', methods=['POST'])
     def receive_swagger():
-        # todo добавить обработку исключений
-        endpoints = {}
         base_url = request.args.get('adress', 'http://127.0.0.1:5000')
-        print(f"Адрес для запроса {base_url}")
         swagger_dict = get_swagger_dict(request)
         security_dict = get_security(swagger_dict)
-        print(f'Значение секции security_schemes  {security_dict}')
         if swagger_dict:
             paths_dict = swagger_dict.get('paths', False)
             if paths_dict:
@@ -99,11 +95,9 @@ def get_swagger_dict(request):
     try:
         if request.headers['Content-Type'] == 'application/json':
             data_json = request.json
-            print('application/json', data_json)
             return data_json
         elif request.headers['Content-Type'] == 'text/plain':
             data_yaml = yaml.load(request.data, Loader=yaml.SafeLoader)
-            print('text/plain', data_yaml)
             return data_yaml
         else:
             print('Получен не обрабатывемый Content-Type')

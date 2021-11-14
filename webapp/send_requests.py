@@ -9,11 +9,9 @@ def execute_standart_tests(endpoints, methods_list, request_url, security_scheme
 
     type_auth = next(iter(security_schemes))
     url = request_url + next(iter(endpoints))
-    print(f'Секурити секция {type_auth}')
     auth_type = security_schemes[type_auth].get('type')
     if auth_type == 'oauth2':
         scope = security_schemes.get('oauth')
-        print(f'Скоуп {scope}')
         client_id = '3dbb0219-2962-4270-bc4f-33b195eae308'
         client_secret = 'b9fbc8af-875d-43a8-9a1d-f31101a6f62f'
         auth_url = 'https//some_site/oauth'
@@ -52,11 +50,11 @@ def execute_standart_tests(endpoints, methods_list, request_url, security_scheme
         #             print(f'Parameter {required}')
         #             execute_required_tests(url, methods_list[0], token, body)
 
-        send_test_request('RqUID header is absent', url, methods_list[0], token, body)
-        send_test_request('Empty RqUID header', url, methods_list[0], token, body)
-        send_test_request('RqUID header less 32 symbols', url, methods_list[0], token, body)
-        send_test_request('RqUID header more 32 symbols', url, methods_list[0], token, body)
-        send_test_request('RqUID header consist invalid symbol', url, methods_list[0], token, body)
+        send_test_request('UID header is absent', url, methods_list[0], token, body)
+        send_test_request('Empty UID header', url, methods_list[0], token, body)
+        send_test_request('UID header less 36 symbols', url, methods_list[0], token, body)
+        send_test_request('UID header more 36 symbols', url, methods_list[0], token, body)
+        send_test_request('UID header consist invalid symbol', url, methods_list[0], token, body)
 
 
 def execute_required_tests(url, methods, token, body):
@@ -64,38 +62,38 @@ def execute_required_tests(url, methods, token, body):
 
 
 def execute_mna_tests(url, method, token, body):
-    headers = {'Authorization': 'Bearer ' + token, 'RqUID': get_uid('rquid')}
+    headers = {'Authorization': 'Bearer ' + token, 'UID': get_uid('uid')}
     tests_execute('Method not allowed', url, method, headers, body)
 
 
 def execute_not_found_tests(url, method, token, body):
-    headers = {'Authorization': 'Bearer ' + token, 'RqUID': get_uid('rquid')}
+    headers = {'Authorization': 'Bearer ' + token, 'UID': get_uid('uid')}
     tests_execute('Not found', url + 'wrongpath', method, headers, body)
 
 
 def execute_authorization_tests(url, method, token, body):
-    headers = {'RqUID': get_uid('rquid')}
+    headers = {'UID': get_uid('uid')}
     tests_execute('Authorization header is absent', url, method, headers, body)
 
-    headers = {'Authorization': '', 'RqUID': get_uid('rquid')}
+    headers = {'Authorization': '', 'UID': get_uid('uid')}
     tests_execute('Empty Authorization header', url, method, headers, body)
 
-    headers = {'Authorization': 'Bearer 77d3073c-5987-4dd0-83f3-e21c0771c029', 'RqUID': get_uid('rquid')}
+    headers = {'Authorization': 'Bearer 77d3073c-5987-4dd0-83f3-e21c0771c029', 'UID': get_uid('uid')}
     tests_execute('In Authorization header other token', url, method, headers, body)
 
 
 def send_test_request(name, url, method, token, body):
-    headers = {'Authorization': 'Bearer ' + token, 'RqUID': get_uid('rquid')}
-    if name == 'RqUID header is absent':
+    headers = {'Authorization': 'Bearer ' + token, 'UID': get_uid('uid')}
+    if name == 'UID header is absent':
         headers = {'Authorization': 'Bearer ' + token}
-    elif name == 'Empty RqUID header':
-        headers = {'Authorization': 'Bearer ' + token, 'RqUID': ''}
-    elif name == 'RqUID header less 32 symbols':
-        headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e31'}
-    elif name == 'RqUID header more 32 symbols':
-        headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6c33'}
-    elif name == 'RqUID header consist invalid symbol':
-        headers = {'Authorization': 'Bearer ' + token, 'RqUID': 'd864bd8b912e4c2d9cf11b2ce8f7e6cz'}
+    elif name == 'Empty UID header':
+        headers = {'Authorization': 'Bearer ' + token, 'UID': ''}
+    elif name == 'UID header less 32 symbols':
+        headers = {'Authorization': 'Bearer ' + token, 'UID': 'd290f1ee-6c54-4b01-90e6-d701748f035'}
+    elif name == 'UID header more 32 symbols':
+        headers = {'Authorization': 'Bearer ' + token, 'UID': 'd290f1ee-6c54-4b01-90e6-d701748f08537'}
+    elif name == 'UID header consist invalid symbol':
+        headers = {'Authorization': 'Bearer ' + token, 'UID': 'd290f1ee-6c54-4b01-90e6-d701748f085z'}
 
     result = tests_execute(name, url, method, headers, body)
     return result
@@ -139,7 +137,4 @@ def get_token(auth_type, client_id, client_secret, scope, auth_url):
 
 def get_uid(type):
     uid = str(uuid.uuid4())
-    if type == 'rquid':
-        return uid.replace('-', '')
-    else:
-        return uid
+    return uid
